@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 app.use(express.raw({ type: '*/*' }));
 
 app.post('/sum', (req, res) => {
-    console.log('Received body:', req.body);
+    console.log('Received body:', JSON.parse(req.body))
 
     let numbers;
 
