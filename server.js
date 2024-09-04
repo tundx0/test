@@ -1,14 +1,21 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
 
-app.use(express.json({
-    verify: (req, res, buf) => {
-        req.rawBody = buf.toString();
-    }
-}));
+app.use(bodyParser.json({ type: 'application/*+json' }));
 
-app.use(express.raw({ type: '*/*' }));
+
+app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }));
+
+
+app.use(bodyParser.text({ type: 'text/html' }));
+
+
+app.use(bodyParser.text({ type: 'text/plain' }));
+
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
     console.log('--- New Request ---');
@@ -17,17 +24,8 @@ app.use((req, res, next) => {
     console.log('URL:', req.url);
     console.log('Headers:', JSON.stringify(req.headers, null, 2));
     console.log('Query Params:', JSON.stringify(req.query, null, 2));
-    
-    console.log('Raw Body:', req.body.toString('utf8'));
-
-
-    try {
-        req.jsonBody = JSON.parse(req.body.toString('utf8'));
-        console.log('Parsed JSON Body:', JSON.stringify(req.jsonBody, null, 2));
-    } catch (error) {
-        console.log('Body is not valid JSON');
-    }
-
+    console.log('Body (parsed):', JSON.stringify(req.body, null, 2));
+    console.log('Body (raw):', req.body instanceof Buffer ? req.body.toString('utf8') : 'Not a Buffer');
     next();
 });
 app.post('/sum', (req, res) => {
