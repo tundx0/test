@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     next();
 });
 app.post('/sum', (req, res) => {
-    console.log('Received body:', JSON.parse(req.body))
+    console.log('Received body:', JSON.stringify(req.body))
 
     let numbers;
 
