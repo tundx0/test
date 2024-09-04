@@ -2,31 +2,29 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-app.use(express.json({
-    verify: (req, res, buf) => {
-        req.rawBody = buf.toString();
-    }
-}));
+app.use(express.raw({ type: '*/*' }));
 
 app.post('/sum', (req, res) => {
     let numbers;
+  
+    console.log('Raw request:', req.body.toString());
+    
     try {
-
-        const body = JSON.parse(req.rawBody);
-        console.log(body)
-        numbers = body.numbers;
+        const body = JSON.parse(req.body.toString());
+        numbers = body;
     } catch (error) {
-       
-        numbers = req.body.numbers;
+        console.error('Error parsing JSON:', error);
+        return res.status(400).send('Invalid JSON input');
     }
 
-    if (!Array.isArray(numbers) ) {
-        return res.status(400).json({ error: 'Invalid input. Please provide an array of integers in the "numbers" field.' });
+    if (!Array.isArray(numbers) || !numbers.every(num => Number.isInteger(num))) {
+        return res.status(400).send('Invalid input. Please provide an array of integers.');
     }
 
     const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-    res.json({ result: sum });
+    
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(sum.toString());
 });
 
 
