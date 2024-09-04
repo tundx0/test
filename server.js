@@ -8,6 +8,8 @@ app.use(express.json({
     }
 }));
 
+app.use(express.raw({ type: '*/*' }));
+
 app.use((req, res, next) => {
     console.log('--- New Request ---');
     console.log('Time:', new Date().toISOString());
@@ -15,8 +17,17 @@ app.use((req, res, next) => {
     console.log('URL:', req.url);
     console.log('Headers:', JSON.stringify(req.headers, null, 2));
     console.log('Query Params:', JSON.stringify(req.query, null, 2));
-    console.log('Body Params:', JSON.stringify(req.body, null, 2));
-    console.log('Raw Body:', req.rawBody);
+    
+    console.log('Raw Body:', req.body.toString('utf8'));
+
+
+    try {
+        req.jsonBody = JSON.parse(req.body.toString('utf8'));
+        console.log('Parsed JSON Body:', JSON.stringify(req.jsonBody, null, 2));
+    } catch (error) {
+        console.log('Body is not valid JSON');
+    }
+
     next();
 });
 app.post('/sum', (req, res) => {
