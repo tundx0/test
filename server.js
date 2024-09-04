@@ -7,9 +7,10 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 app.post('/sum', (req, res) => {
+    console.log(req.body)
     const numbers = req.body;
 
-    if (!Array.isArray(numbers) || !numbers.every(num => Number.isInteger(num) && num >= -2147483648 && num <= 2147483647)) {
+    if (!Array.isArray(numbers)) {
         return res.status(400).json({ error: 'Invalid input. Please provide an array of int32 numbers.' });
     }
 
