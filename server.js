@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.raw({ type: '*/*' }));
 
 app.post('/sum', (req, res) => {
     console.log('Received body:', JSON.stringify(req.body));
