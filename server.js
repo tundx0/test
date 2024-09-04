@@ -2,27 +2,32 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.raw({ type: '*/*' }));
+app.use(express.json());
 
 app.post('/sum', (req, res) => {
+    console.log('Received body:', JSON.stringify(req.body));
+
     let numbers;
-  
-    console.log('Raw request:', req.body.toString());
-    
-    try {
-        const body = JSON.parse(req.body.toString());
-        numbers = body;
-    } catch (error) {
-        console.error('Error parsing JSON:', error);
-        return res.status(400).send('Invalid JSON input');
+
+    if (Array.isArray(req.body)) {
+        numbers = req.body;
+    } else if (req.body && Array.isArray(req.body.numbers)) {
+        numbers = req.body.numbers;
+    } else {
+        console.error('Invalid input structure');
+        return res.status(400).send('Invalid input structure. Expected an array of integers or an object with a "numbers" array.');
     }
 
-    if (!Array.isArray(numbers) || !numbers.every(num => Number.isInteger(num))) {
-        return res.status(400).send('Invalid input. Please provide an array of integers.');
+    if (!numbers.every(num => Number.isInteger(num))) {
+        console.error('Non-integer values found');
+        return res.status(400).send('Invalid input. All elements must be integers.');
     }
 
     const sum = numbers.reduce((acc, curr) => acc + curr, 0);
     
+    console.log('Calculated sum:', sum);
+    
+
     res.setHeader('Content-Type', 'text/plain');
     res.send(sum.toString());
 });
