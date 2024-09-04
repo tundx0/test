@@ -10,9 +10,7 @@ app.post('/sum', (req, res) => {
     console.log(req.body)
     const numbers = req.body;
 
-    if (!Array.isArray(numbers)) {
-        return res.status(400).json({ error: 'Invalid input. Please provide an array of int32 numbers.' });
-    }
+
 
     const sum = numbers.reduce((acc, curr) => acc + curr, 0);
     res.json({ result: sum });
