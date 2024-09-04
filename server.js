@@ -2,8 +2,23 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.raw({ type: '*/*' }));
+app.use(express.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf.toString();
+    }
+}));
 
+app.use((req, res, next) => {
+    console.log('--- New Request ---');
+    console.log('Time:', new Date().toISOString());
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Query Params:', JSON.stringify(req.query, null, 2));
+    console.log('Body Params:', JSON.stringify(req.body, null, 2));
+    console.log('Raw Body:', req.rawBody);
+    next();
+});
 app.post('/sum', (req, res) => {
     console.log('Received body:', JSON.parse(req.body))
 
